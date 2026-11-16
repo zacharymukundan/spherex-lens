@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SPHEREx Sky Flipbook</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700&family=Public+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f2ee;--panel:#fff;--line:#d9d4cb;--text:#1c1a22;--muted:#6a6573;--accent:#b4491c;--sky:#0a0d1c;--cy:#2aa8c4;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10142a;--panel:#171c38;--line:#2c3359;--text:#e9e7f2;--muted:#9b99b4;--accent:#ffb067;--sky:#05060f;--cy:#6fd8ee}}
+:root[data-theme="dark"]{--bg:#10142a;--panel:#171c38;--line:#2c3359;--text:#e9e7f2;--muted:#9b99b4;--accent:#ffb067;--sky:#05060f;--cy:#6fd8ee}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--text);font:14px/1.4 "Public Sans",system-ui,sans-serif;display:flex;flex-direction:column;overflow:hidden}
+header{display:flex;align-items:center;gap:18px;padding:16px 16px 12px;flex:none}
+h1{font:700 36px/1 Fraunces,Georgia,serif;margin:0}
+.home{display:inline-flex;align-items:center;gap:7px;color:var(--text);text-decoration:none;font-size:15px;font-weight:600;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:8px 14px}.home:hover{border-color:var(--accent)}.home:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+#msg{margin-left:auto;font-size:14px;color:var(--accent);text-align:right}
+.app{flex:1;min-height:0;display:grid;grid-template-rows:minmax(0,1fr);grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:0 16px 12px}
+.left,.side{display:flex;min-height:0;min-width:0;flex-direction:column}
+.left{width:var(--s,300px);justify-self:end}
+.side{gap:10px;overflow:auto}
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:10px;align-items:start}
+.sq{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.stage{position:relative;flex:none;width:var(--s,300px);height:var(--s,300px);overflow:hidden;background:var(--sky);border-radius:8px;line-height:0}
+.ro{position:absolute;left:8px;bottom:8px;padding:2px 7px;border-radius:4px;background:rgba(5,6,15,.72);color:#e9e7f2;font:12px/1.5 ui-monospace,Menlo,monospace;pointer-events:none}
+#cv{display:block;width:100%;height:100%;cursor:crosshair;image-rendering:pixelated}
+.bar{display:flex;gap:10px;align-items:center;margin:8px auto 0;width:var(--s,100%)}
+.bar input[type=range]{flex:1;min-width:0}
+.bar select{width:104px;flex:none;padding:4px 6px}
+#Nwrap{transition:opacity .2s}#N:disabled{cursor:default}
+.meta{grid-column:1/-1;display:flex;align-items:center;justify-content:center;text-align:center;font-size:13px;color:var(--muted);margin:0;height:58px;overflow:hidden;padding:0 2px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px}
+.bottom{flex:1;min-height:150px;display:flex;gap:10px}
+.card.grow{flex:1;min-width:0;padding:6px;display:flex}
+.ovcard{flex:none;padding:0;background:var(--sky);overflow:hidden}
+.spwrap{position:relative;height:100%;flex:1;min-width:0}
+#ov{display:block;background:var(--sky);cursor:help}
+.col{display:flex;flex-direction:column;gap:10px}
+.gaiacard{display:flex;align-items:center;gap:12px;padding:8px 10px}.gaiacard label{display:flex;gap:6px;align-items:center;font-size:13px;color:var(--text);margin:0;white-space:nowrap}.gaiacard input[type=range]{flex:1;min-width:60px}#sp{position:absolute;inset:0;width:100%;height:100%}
+button,select,input{font:inherit;color:var(--text)}
+button{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:5px 12px;cursor:pointer}
+button:hover{border-color:var(--accent)}
+:is(button,input,select):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.pri{background:var(--accent);border-color:var(--accent);color:#fff;font-weight:600}
+input[type=text],input[type=number],select{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:5px 8px;width:100%}
+.row{display:grid;grid-template-columns:1fr 1fr 64px auto;gap:8px;align-items:end}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:2px}
+.chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.chips button{font-size:12px;padding:3px 8px}
+.dets{display:flex;gap:5px;margin:0 0 8px}.dets button{flex:1;padding:4px 0;border-bottom-width:4px;opacity:.45}.dets button.on{opacity:1}
+.checks{display:flex;gap:16px;flex-wrap:wrap}.checks label{display:flex;gap:6px;align-items:center;color:var(--text);font-size:13px;margin:0}.checks input{width:auto}
+@media(max-width:900px){body{overflow:auto;height:auto;display:block}.app{display:flex;flex-direction:column}.left{order:-1}.sq{display:block}.stage{margin:0 auto}.left{width:auto}.side{margin-top:10px}.bottom{height:260px;flex:none}}
+</style>
+</head>
+<body>
+<header><h1>SPHEREx Sky Flipbook</h1><a class="home" href="index.html"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>Home</a><div id="msg" role="status"></div></header>
+<div class="app">
+<aside class="side">
+<div class="ctl">
+<div class="col">
+<div class="card">
+<div class="row"><div><label for="ra">RA</label><input type="text" id="ra" value="133.79513"></div><div><label for="dec">Dec</label><input type="text" id="dec" value="-7.24515"></div><div><label for="fov">Field (′)</label><input type="number" id="fov" value="5" min="1" max="10" step="1"></div><button id="go" class="pri" hidden>Go</button></div>
+<div class="chips" id="pre"></div>
+</div>
+<div class="card gaiacard"><label><input type="checkbox" id="gaia" checked> Gaia stars</label><label style="flex:1">brighter than G=<span id="gv">16</span><input type="range" id="gm" min="8" max="20" value="16" aria-label="Gaia magnitude limit"></label></div>
+</div>
+<div class="card">
+<div class="two"><div><label for="mode">Combine</label><select id="mode"><option value="raw">Single frame</option><option value="stack">Add recent frames</option><option value="dmed">Subtract median sky</option><option value="dfirst">Subtract first frames</option></select></div>
+<div id="Nwrap"><label for="N">Frames to add: <span id="Nv">4</span></label><input type="range" id="N" min="1" max="20" value="4" style="width:100%"></div></div>
+<label>Detectors</label><div class="dets" id="dets"></div>
+<div class="two"><div><label for="st">Stretch</label><input type="range" id="st" min="1" max="60" value="8" style="width:100%"></div>
+<div><label for="cm">Colours</label><select id="cm"><option value="heat">Infrared heat</option><option value="gray">Grayscale</option></select></div></div>
+<div class="checks"><label><input type="checkbox" id="bg" checked> Remove sky background</label><label><input type="checkbox" id="visit" checked> Combine by visit</label><label title="Hide frames that cover less than half of the field"><input type="checkbox" id="cov" checked> Hide partial frames <span id="covn"></span></label></div>
+</div>
+<div class="meta"><div id="info"></div></div>
+</div>
+<div class="bottom"><div class="card grow"><div class="spwrap"><canvas id="sp"></canvas></div></div><div class="card ovcard"><canvas id="ov" width="300" height="300" title="Wider view of the earliest exposure. The white square is the area shown in the viewer."></canvas></div></div>
+</aside>
+<main class="left">
+<div class="sq"><div class="stage"><canvas id="cv" width="600" height="600"></canvas><div class="ro" id="ro" hidden></div></div></div>
+<div class="bar"><button id="play" class="pri" aria-label="Play or pause">Play</button><input type="range" id="fr" min="0" max="0" value="0" aria-label="Frame"><select id="spd" aria-label="Speed"><option value="2">Slow</option><option value="6" selected>Medium</option><option value="14">Fast</option></select></div>
+</main>
+</div>
+<script>
+const $=s=>document.querySelector(s),RAD=206264.806,GE=57388,GAP=30/1440;
+const PRE={"WISE 0855":["08:55:10.831","-07:14:42.53",5],"Barnard’s Star":["17:57:47.1","+04:45:59.8",5],"Epsilon Indi":["22:03:34.0","-56:48:14.4",10],"RW Aurigae":["05:07:49.57","+30:24:05.2",5],"R Draconis":["16:32:42.7","+66:45:17",5]};
+const DC=["#4f8cff","#2fc4b2","#8bd44a","#f2c230","#ff8a3d","#ff5252"];
+let cube=null,dets=new Set([0,1,2,3,4,5]),sel=null,t=0,timer=null,med={},BG=true,VISIT=true,COV=true,GL=16,AC=null,SR={},SY={},reqId=0,LD=null,LP=0,LM="",loaded=null;
+const LUT={heat:[[0,0,0],[40,10,90],[170,30,90],[250,110,30],[255,220,120],[255,255,255]],gray:[[0,0,0],[255,255,255]]};
+function lut(name){const s=LUT[name],o=new Uint8Array(1024);for(let i=0;i<256;i++){const f=i/255*(s.length-1),k=Math.min(s.length-2,Math.floor(f)),w=f-k;for(let c=0;c<3;c++)o[i*4+c]=s[k][c]*(1-w)+s[k+1][c]*w;o[i*4+3]=255}return o}
+/* target inputs: editing shows Go, nothing loads until it is pressed */
+const SEX=/^([+-]?)(\d{1,3})[:hd]\s*(\d{1,2})(?:[:m]\s*(\d{1,2}(?:\.\d+)?)s?)?$/i;
+function checkAngle(text,ra){const t=text.replace(/\s/g,""),name=ra?"RA":"Dec";if(!t)return name+" is empty.";
+const m=t.match(SEX);if(m){const a=+m[2],b=+m[3],c=+(m[4]||0);if(b>=60||c>=60)return name+": minutes and seconds must be under 60.";const v=a+b/60+c/3600;if(ra&&v>=24)return "RA must be under 24 hours (you entered "+a+"h).";if(!ra&&v>90)return "Dec must be between −90° and +90°.";return ""}
+if(!/^[+-]?\d+(\.\d+)?$/.test(t))return "Couldn’t read "+name+". Use degrees (133.795) or h:m:s (08:55:10.8).";const v=+t;
+if(ra&&(v<0||v>=360))return "RA in degrees must be from 0 to 360.";if(!ra&&Math.abs(v)>90)return "Dec must be between −90° and +90°.";return ""}
+function validate(){const f=parseFloat($("#fov").value);return checkAngle($("#ra").value,true)||checkAngle($("#dec").value,false)||(f>=1&&f<=10?"":"Field must be between 1 and 10 arcminutes.")}
+const cur=()=>[$("#ra").value.trim(),$("#dec").value.trim(),$("#fov").value||"5"].join("|");
+const chk=()=>{$("#go").hidden=cur()===loaded};
+for(const k in PRE){const b=document.createElement("button");b.textContent=k;b.onclick=()=>{$("#ra").value=PRE[k][0];$("#dec").value=PRE[k][1];$("#fov").value=PRE[k][2];chk()};$("#pre").append(b)}
+{const b=document.createElement("button");b.textContent="Check on SIMBAD \u2197";b.style.marginLeft="auto";b.onclick=()=>{const bad=validate();if(bad){$("#msg").textContent=bad;return}const c=s=>s.trim().replace(/[:hdms]/gi," ").replace(/\s+/g," ").trim();open("https://simbad.cds.unistra.fr/simbad/sim-coo?"+new URLSearchParams({"Coord":c($("#ra").value)+" "+c($("#dec").value),"CooFrame":"FK5","CooEpoch":"2000","Radius":"2","Radius.unit":"arcmin","output.format":"HTML"}),"_blank","noopener")};$("#pre").append(b)}
+["ra","dec","fov"].forEach(i=>{$("#"+i).oninput=chk;$("#"+i).onkeydown=e=>{if(e.key==="Enter"&&!$("#go").hidden)loadLive()}});
+$("#go").onclick=()=>loadLive();
+const qp=new URLSearchParams(location.search);["ra","dec","fov"].forEach(k=>{if(qp.get(k))$("#"+k).value=qp.get(k)});
+for(let d=0;d<6;d++){const b=document.createElement("button");b.textContent="D"+(d+1);b.className="on";b.style.borderBottomColor=DC[d];b.title=["0.75–1.09","1.09–1.62","1.62–2.41","2.42–3.82","3.82–4.42","4.42–5.00"][d]+" µm";b.onclick=()=>{dets.has(d)?dets.delete(d):dets.add(d);b.classList.toggle("on");if(!dets.size){dets.add(d);b.classList.add("on")}t=0;setup()};$("#dets").append(b)}
+const cover=d=>{let k=0;for(let i=0;i<d.length;i++)if(d[i]===d[i])k++;return k/d.length};
+function dec64(b){const s=atob(b),u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return new Float32Array(u.buffer)}
+function bgsub(d){const v=[];for(let i=0;i<d.length;i+=3){const x=d[i];if(x===x)v.push(x)}v.sort((a,b)=>a-b);const m=v.length?v[v.length>>1]:0;return d.map(x=>x-m)}
+function setCube(c){loading(false);if(c.context&&c.context.b){c.context.d=dec64(c.context.b);delete c.context.b}c.frames.forEach(f=>{if(f.b){f.d=dec64(f.b);delete f.b}f.s=bgsub(f.d);f.cov=cover(f.d);f.frames=[f];f.dets=[f.det];f.wl0=f.wl1=f.wl;f.mjd0=f.mjd1=f.mjd});c.frames.sort((a,b)=>a.mjd-b.mjd);cube=c;sel=null;med={};SR={};SY={};AC=null;t=0;$("#msg").textContent=c.gaia_error?"Gaia stars unavailable ("+c.gaia_error+")":"";$("#gaia").disabled=!!c.gaia_error;drawOv();setup()}
+const mean=(list,key)=>{const n2=cube.n*cube.n,s=new Float32Array(n2),k=new Uint16Array(n2);for(const f of list){const d=f[key];for(let i=0;i<n2;i++){const v=d[i];if(v===v){s[i]+=v;k[i]++}}}for(let i=0;i<n2;i++)s[i]=k[i]?s[i]/k[i]:NaN;return s};
+/* a visit = exposures less than GAP apart; their images are averaged into one picture */
+function groupVisits(fr){const out=[];let cur=[];const flush=()=>{if(!cur.length)return;if(cur.length===1)out.push(cur[0]);else{const av=k=>cur.reduce((s,f)=>s+f[k],0)/cur.length,w=cur.map(f=>f.wl);out.push({frames:cur,mjd:av("mjd"),mjd0:cur[0].mjd,mjd1:cur[cur.length-1].mjd,d:mean(cur,"d"),s:mean(cur,"s"),dets:[...new Set(cur.map(f=>f.det))].sort(),wl:av("wl"),wl0:Math.min(...w),wl1:Math.max(...w),fl:av("fl"),ver:cur[0].ver})}cur=[]};for(const f of fr){if(cur.length&&f.mjd-cur[cur.length-1].mjd>GAP)flush();cur.push(f)}flush();return out}
+function act(){if(!cube)return[];const key=[...dets].join()+VISIT+COV;if(AC&&AC.k===key&&AC.c===cube)return AC.a;const fr=cube.frames.filter(f=>dets.has(f.det)&&(!COV||f.cov>=.5)),a=VISIT?groupVisits(fr):fr;a.forEach(g=>{if(g.cov===undefined)g.cov=cover(g.d)});AC={k:key,c:cube,a};return a}
+const D=f=>BG?f.s:f.d;
+function setup(){const a=act(),hid=cube?cube.frames.filter(f=>dets.has(f.det)&&f.cov<.5).length:0;$("#covn").textContent=COV&&hid?"("+hid+" hidden)":"";$("#fr").max=Math.max(0,a.length-1);t=Math.min(t,Math.max(0,a.length-1));draw()}
+function pct(v,p){return v[Math.min(v.length-1,Math.floor(p*v.length))]}
+function stretchFor(a){const key=[...dets].join()+BG+VISIT+a.length;if(SR[key])return SR[key];const v=[],k=Math.max(1,Math.floor(a.length/12));for(let j=0;j<a.length;j+=k){const d=D(a[j]);for(let i=0;i<d.length;i+=2)if(d[i]===d[i])v.push(d[i])}v.sort((p,q)=>p-q);return SR[key]=[pct(v,.02),pct(v,.997)]}
+function meanOf(list){const n2=cube.n*cube.n,s=new Float32Array(n2),k=new Uint16Array(n2);for(const f of list){const d=D(f);for(let i=0;i<n2;i++){const v=d[i];if(v===v){s[i]+=v;k[i]++}}}for(let i=0;i<n2;i++)s[i]=k[i]?s[i]/k[i]:NaN;return s}
+function median(a){const key=[...dets].join()+BG+VISIT+a.length;if(med[key])return med[key];const n2=cube.n*cube.n,o=new Float32Array(n2);for(let i=0;i<n2;i++){const v=[];for(const f of a){const x=D(f)[i];if(x===x)v.push(x)}v.sort((p,q)=>p-q);o[i]=v.length?v[v.length>>1]:NaN}return med[key]=o}
+function frameImg(a){const m=$("#mode").value,N=+$("#N").value;if(m==="raw")return D(a[t]);const s=meanOf(a.slice(Math.max(0,t-N+1),t+1));if(m==="stack")return s;const r=m==="dmed"?median(a):meanOf(a.slice(0,N));return s.map((v,i)=>v-r[i])}
+const off=document.createElement("canvas"),off2=document.createElement("canvas");
+/* overview: a wider look at the earliest exposure, with a white square marking the area the viewer shows */
+function drawOv(){const c=$("#ov"),g=c.getContext("2d"),X=cube&&cube.context;fit();g.fillStyle="#05060f";g.fillRect(0,0,300,300);
+if(!X){if(!LD){g.fillStyle="#6a6573";g.font="13px 'Public Sans',sans-serif";g.textAlign="center";g.fillText("No overview available",150,154);g.textAlign="left"}return}
+const n=X.n,d=X.d,v=[];for(let i=0;i<d.length;i+=2)if(d[i]===d[i])v.push(d[i]);v.sort((p,q)=>p-q);
+const m=v.length?v[v.length>>1]:0,hi=Math.max(1e-6,(v.length?pct(v,.997):1)-m),L=lut($("#cm").value),s=3,den=Math.asinh(s);
+off2.width=off2.height=n;const oc=off2.getContext("2d"),id=oc.createImageData(n,n);
+for(let i=0;i<d.length;i++){let w=(d[i]-m)/hi;if(w!==w){id.data.set([20,20,40,255],i*4);continue}w=Math.max(0,Math.min(1,w));w=Math.asinh(s*w)/den;const k=Math.round(w*255)*4;id.data.set(L.subarray(k,k+4),i*4)}
+oc.putImageData(id,0,0);g.imageSmoothingEnabled=false;g.drawImage(off2,0,0,300,300);
+const f=cube.n/n*300;g.strokeStyle="#fff";g.lineWidth=2;g.strokeRect(150-f/2,150-f/2,f,f)}
+function proj(ra,dc){const r=Math.PI/180,a=ra*r,d=dc*r,a0=cube.ra*r,d0=cube.dec*r,c=Math.sin(d0)*Math.sin(d)+Math.cos(d0)*Math.cos(d)*Math.cos(a-a0),xi=Math.cos(d)*Math.sin(a-a0)/c,eta=(Math.cos(d0)*Math.sin(d)-Math.sin(d0)*Math.cos(d)*Math.cos(a-a0))/c,k=(cube.n-1)/2;return[k-xi*RAD/cube.scale,k-eta*RAD/cube.scale]}
+function draw(){const g=$("#cv").getContext("2d"),a=act();
+if(!cube||!a.length){if(!LD){g.fillStyle="#05060f";g.fillRect(0,0,600,600);$("#info").textContent=cube?"No frames match these settings.":""}spec();return}
+const n=cube.n,z=600/n,im=frameImg(a),diff=$("#mode").value.startsWith("d"),fin=[];
+for(let i=0;i<im.length;i++)if(im[i]===im[i])fin.push(Math.abs(im[i]));fin.sort((p,q)=>p-q);
+let lo,hi;if(diff){hi=pct(fin,.99)||1;lo=-hi}else{[lo,hi]=stretchFor(a)}if(hi<=lo)hi=lo+1;
+const L=lut($("#cm").value),s=+$("#st").value/4,den=Math.asinh(s);off.width=off.height=n;const oc=off.getContext("2d"),id=oc.createImageData(n,n);
+for(let i=0;i<im.length;i++){let v=(im[i]-lo)/(hi-lo);if(v!==v){id.data.set([20,20,40,255],i*4);continue}v=Math.max(0,Math.min(1,v));v=Math.asinh(s*v)/den;const k=Math.round(v*255)*4;id.data.set(L.subarray(k,k+4),i*4)}
+oc.putImageData(id,0,0);g.imageSmoothingEnabled=false;g.drawImage(off,0,0,600,600);
+const f=a[t];
+if($("#gaia").checked&&cube.gaia&&cube.gaia.length){g.strokeStyle=getComputedStyle(document.documentElement).getPropertyValue("--cy");g.lineWidth=1.5;const yr=(f.mjd-GE)/365.25;for(const[ra,dc,pa,pd,m]of cube.gaia){if((m||20)>GL)continue;const r=ra+pa*yr/3.6e6/Math.cos(dc*Math.PI/180),d=dc+pd*yr/3.6e6,[x,y]=proj(r,d);if(x<0||y<0||x>n||y>n)continue;g.beginPath();g.arc((x+.5)*z,(y+.5)*z,Math.max(5,17-((m||20)-8)*.9),0,7);g.stroke()}}
+if(sel){g.strokeStyle="#fff";g.lineWidth=1;const x=(sel[0]+.5)*z,y=(sel[1]+.5)*z;g.strokeRect(x-z*1.5,y-z*1.5,z*3,z*3)}
+const iso=m=>new Date(Math.round((m-40587)*864e5)).toISOString(),a0=iso(f.mjd0),a1=iso(f.mjd1),many=f.frames.length>1,d0=a0.slice(0,10)+" "+a0.slice(11,23),d1=(a1.slice(0,10)===a0.slice(0,10)?"":a1.slice(0,10)+" ")+a1.slice(11,23);
+$("#info").innerHTML=(many?`Visit ${t+1} of ${a.length} · ${f.frames.length} exposures · ${d0} to ${d1} UTC`:VISIT?`Visit ${t+1} of ${a.length} · 1 exposure · ${d0} UTC`:`Frame ${t+1} of ${a.length} · exposure start ${d0} UTC`)+`<br>MJD ${f.mjd0.toFixed(6)}${many?" to "+f.mjd1.toFixed(6):""} · ${f.dets.map(x=>"D"+(x+1)).join(" ")} · ${f.wl0===f.wl1?f.wl.toFixed(3):f.wl0.toFixed(2)+"–"+f.wl1.toFixed(2)} µm · ${Math.round(f.cov*100)}% covered · ${(f.fl*100).toFixed(1)}% flagged${f.ver?" · pipeline "+f.ver:""}`;
+$("#fr").value=t;spec()}
+/* spectrum: axes come from every pixel of every frame, so they stay put as you move between pixels */
+function specRange(){if(SY[BG])return SY[BG];const v=[];for(const f of cube.frames){const d=D(f);for(let i=0;i<d.length;i+=2)if(d[i]===d[i])v.push(d[i])}const a=Float32Array.from(v).sort(),n=a.length;let lo=a[Math.floor(n*.001)],hi=a[Math.min(n-1,Math.floor(n*.9999))];const s=(a[Math.floor(n*.84)]-a[Math.floor(n*.16)])/2||1;if(hi<=lo)hi=lo+s;return SY[BG]=[lo,hi,s]}
+function spec(){const c=$("#sp"),g=c.getContext("2d"),W=c.width,H=c.height,r=devicePixelRatio||1,cs=getComputedStyle(document.documentElement),tx=cs.getPropertyValue("--text"),ln=cs.getPropertyValue("--line"),mu=cs.getPropertyValue("--muted");
+g.clearRect(0,0,W,H);g.font=`${11*r}px "Public Sans",sans-serif`;g.fillStyle=mu;
+if(!cube||!sel){g.textAlign="center";g.fillText("Click the image to see a spectrum",W/2,H/2);g.textAlign="left";return}
+const n=cube.n,pts=[],cf=act()[t];
+for(const f of cube.frames){if(COV&&f.cov<.5)continue;let s=0,k=0;const d=D(f);for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const x=sel[0]+dx,y=sel[1]+dy;if(x<0||y<0||x>=n||y>=n)continue;const v=d[y*n+x];if(v===v){s+=v;k++}}if(k)pts.push([f.wl,s/k,f.det,f])}
+const[lo,hi,s0]=specRange(),A=v=>Math.asinh(v/s0),a0=A(lo),a1=A(hi),L=46*r,R=10*r,T=18*r,B=26*r,X=w=>L+(w-.7)/4.4*(W-L-R),Y=v=>H-B-(A(v)-a0)/(a1-a0)*(H-B-T);
+const ticks=[];if(lo<=0&&hi>=0)ticks.push(0);for(let e=s0;e<Math.max(Math.abs(lo),Math.abs(hi))*1.0001;e*=10)for(const m of[1,-1])if(m*e>=lo&&m*e<=hi)ticks.push(m*e);if(ticks.length<3)for(let i=0;i<=4;i++)ticks.push(lo+(hi-lo)*i/4);
+const fm=v=>v===0?"0":Math.abs(v)>=1000?(v/1000).toPrecision(2)+"k":Math.abs(v)>=100?v.toFixed(0):v.toPrecision(2);
+g.strokeStyle=ln;g.lineWidth=r;g.beginPath();for(let w=1;w<=5;w++){g.moveTo(X(w),T);g.lineTo(X(w),H-B)}for(const v of ticks){g.moveTo(L,Y(v));g.lineTo(W-R,Y(v))}g.stroke();
+g.fillStyle=mu;for(let w=1;w<=5;w++)g.fillText(w,X(w)-3*r,H-9*r);g.textAlign="right";for(const v of ticks)g.fillText(fm(v),L-4*r,Y(v)+4*r)
+g.fillText("(x "+sel[0]+", y "+sel[1]+")",W-R,12*r);g.textAlign="left";g.fillText("MJy/sr (asinh scale)",2*r,12*r);g.fillText("µm",W-R-14*r,H-9*r);
+for(const[w,v,d,f]of pts){const cu=cf&&cf.frames.includes(f);g.fillStyle=DC[d];g.globalAlpha=dets.has(d)?1:.25;g.beginPath();g.arc(X(w),Math.max(T,Math.min(H-B,Y(v))),(cu?5:2.5)*r,0,7);g.fill();if(cu){g.strokeStyle=tx;g.lineWidth=2*r;g.stroke()}}g.globalAlpha=1}
+$("#cv").onclick=e=>{if(!cube)return;const q=e.target.getBoundingClientRect(),n=cube.n;sel=[Math.min(n-1,Math.floor((e.clientX-q.left)/q.width*n)),Math.min(n-1,Math.floor((e.clientY-q.top)/q.height*n))];draw()};
+/* hover: sky coordinates under the cursor, to check the image really shows the place you asked for */
+const ang=(v,ra)=>{let q=Math.round(v*36000);const sg=ra?"":q<0?"\u2212":"+";if(ra)q=((q%864000)+864000)%864000;q=Math.abs(q);return sg+String(Math.floor(q/36000)).padStart(2,"0")+":"+String(Math.floor(q%36000/600)).padStart(2,"0")+":"+((q%600)/10).toFixed(1).padStart(4,"0")};
+function skyAt(j,i){const k=(cube.n-1)/2,s=cube.scale/RAD,xi=-(j-k)*s,eta=-(i-k)*s,r=Math.PI/180,a0=cube.ra*r,d0=cube.dec*r,rho=Math.hypot(xi,eta),cc=Math.atan(rho),d=Math.asin(Math.cos(cc)*Math.sin(d0)+(rho?eta*Math.sin(cc)*Math.cos(d0)/rho:0)),a=a0+Math.atan2(xi*Math.sin(cc),rho*Math.cos(d0)*Math.cos(cc)-eta*Math.sin(d0)*Math.sin(cc));return[((a/r)%360+360)%360,d/r]}
+$("#cv").onmousemove=e=>{const ro=$("#ro");if(!cube){ro.hidden=true;return}const q=e.target.getBoundingClientRect(),n=cube.n,[ra,dc]=skyAt((e.clientX-q.left)/q.width*n-.5,(e.clientY-q.top)/q.height*n-.5);ro.hidden=false;ro.textContent="RA "+ang(ra/15,true)+"  Dec "+ang(dc,false)};
+$("#cv").onmouseleave=()=>{$("#ro").hidden=true};
+$("#fr").oninput=e=>{t=+e.target.value;draw()};
+$("#N").oninput=e=>{$("#Nv").textContent=e.target.value;draw()};
+["mode","st","cm","gaia"].forEach(i=>$("#"+i).oninput=draw);
+function syncN(){const off=$("#mode").value==="raw";$("#N").disabled=off;$("#Nwrap").style.opacity=off?.3:1}
+$("#mode").oninput=()=>{syncN();draw()};
+$("#cm").addEventListener("input",()=>{if(cube)drawOv()});
+$("#bg").oninput=e=>{BG=e.target.checked;med={};SR={};draw()};
+$("#visit").oninput=e=>{VISIT=e.target.checked;AC=null;med={};SR={};t=0;setup()};
+$("#cov").oninput=e=>{COV=e.target.checked;AC=null;med={};SR={};t=0;setup()};
+$("#gm").oninput=e=>{GL=+e.target.value;$("#gv").textContent=GL;draw()};
+function run(){clearInterval(timer);if($("#play").textContent==="Pause")timer=setInterval(()=>{const l=act().length;if(l){t=(t+1)%l;draw()}},1000/$("#spd").value)}
+$("#play").onclick=()=>{$("#play").textContent=$("#play").textContent==="Play"?"Pause":"Play";run()};$("#spd").onchange=run;
+/* keep the image square and the spectrum sharp whatever the window size */
+function fit(){const sq=document.querySelector(".sq"),aw=document.querySelector(".app").clientWidth-32,s=Math.max(120,Math.floor(innerWidth<=900?aw:Math.min(sq.clientHeight,aw-12-420)));document.querySelector(".left").style.setProperty("--s",s+"px");$("#ov").style.width=$("#ov").style.height=Math.max(0,document.querySelector(".bottom").clientHeight-2)+"px";const c=$("#sp"),r=devicePixelRatio||1;c.width=Math.round(c.clientWidth*r);c.height=Math.round(c.clientHeight*r);spec()}
+if(window.ResizeObserver){const ro=new ResizeObserver(fit);ro.observe(document.querySelector(".sq"));ro.observe(document.querySelector(".app"));ro.observe(document.querySelector(".spwrap"))}addEventListener("resize",fit);
+/* loading screen with a real progress bar */
+function loading(on){cancelAnimationFrame(LD);clearTimeout(LD);LD=null;if(!on)return;
+const g=$("#cv").getContext("2d"),still=matchMedia("(prefers-reduced-motion:reduce)").matches,t0=performance.now();$("#info").textContent="";
+const f=now=>{const s=(now-t0)/1000;g.fillStyle="#05060f";g.fillRect(0,0,600,600);
+for(let i=0;i<60;i++){g.fillStyle=`rgba(255,255,255,${.35+.35*Math.sin(s*2+i)})`;g.fillRect((i*97.3)%600,(i*211.7)%600,2,2)}
+for(let k=0;k<12;k++){const a=s*2.2-k*.28;g.fillStyle=`rgba(255,176,103,${1-k/12})`;g.beginPath();g.arc(300+Math.cos(a)*60,300+Math.sin(a)*60,9-k*.5,0,7);g.fill()}
+g.fillStyle="#cfd2e6";g.font="20px 'Public Sans',sans-serif";g.textAlign="center";g.fillText("Loading SPHEREx images\u2026",300,400);g.font="15px 'Public Sans',sans-serif";g.fillStyle="#9b99b4";g.fillText(LM,300,432);g.fillStyle="#2c3359";g.fillRect(150,448,300,6);g.fillStyle="#ffb067";g.fillRect(150,448,300*LP,6);g.textAlign="left";
+const o=$("#ov").getContext("2d");o.fillStyle="#05060f";o.fillRect(0,0,300,300);for(let k=0;k<10;k++){const a=s*2.2-k*.3;o.fillStyle=`rgba(255,176,103,${1-k/10})`;o.beginPath();o.arc(150+Math.cos(a)*26,150+Math.sin(a)*26,5-k*.35,0,7);o.fill()}o.fillStyle="#2c3359";o.fillRect(100,196,100,3);o.fillStyle="#ffb067";o.fillRect(100,196,100*LP,3);
+LD=still?setTimeout(()=>f(performance.now()),1000):requestAnimationFrame(f)};LD=requestAnimationFrame(f)}
+async function loadLive(){const m=$("#msg"),bad=validate();if(bad){m.textContent=bad;return}const id=++reqId;m.textContent="";loaded=cur();chk();LP=0;LM="Starting\u2026";loading(true);
+const q=new URLSearchParams({ra:$("#ra").value.trim(),dec:$("#dec").value.trim(),fov:$("#fov").value||5});
+try{let r=await fetch("api/cube/start?"+q);if(!r.ok){let e="";try{e=(await r.json()).error}catch(x){}throw new Error(e||"HTTP "+r.status)}let j=await r.json();
+while(j.state!=="done"){if(id!==reqId)return;if(j.state==="error")throw new Error(j.error);LP=j.progress||0;LM=j.stage||"Waiting for another request to finish\u2026";await new Promise(s=>setTimeout(s,1500));if(id!==reqId)return;r=await fetch("api/cube/status/"+j.id);if(!r.ok)throw new Error("HTTP "+r.status);j=await r.json()}
+LP=1;LM="Opening the images\u2026";r=await fetch(j.url);if(!r.ok)throw new Error("HTTP "+r.status);const c=await r.json();if(id!==reqId)return;setCube(c)}
+catch(x){if(id!==reqId)return;loading(false);cube=null;loaded=null;chk();draw();drawOv();m.textContent="Couldn\u2019t get data: "+x.message}}
+syncN();fit();loadLive();
+</script>
+</body>
+</html>
